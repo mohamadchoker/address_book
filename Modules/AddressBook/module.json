@@ -1,0 +1,13 @@
+{
+    "name": "AddressBook",
+    "alias": "addressbook",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AddressBook\\Providers\\AddressBookServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
