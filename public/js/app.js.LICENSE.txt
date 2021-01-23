@@ -1,0 +1,31 @@
+/*! /usr/local/var/www/html/anghami_challenge/public/js/app.js */
+
+/*! /usr/local/var/www/html/anghami_challenge/public/sass/app.scss */
+
+/*! For license information please see app.js.LICENSE.txt */
+
+/*! no static exports found */
+
+/*!**************************!*\
+        !*** ./public/js/app.js ***!
+        \**************************/
+
+/*!**************************!*\
+    !*** ./public/js/app.js ***!
+    \**************************/
+
+/*!******************************!*\
+        !*** ./public/sass/app.scss ***!
+        \******************************/
+
+/*!******************************!*\
+    !*** ./public/sass/app.scss ***!
+    \******************************/
+
+/*!*******************************************************!*\
+        !*** multi ./public/js/app.js ./public/sass/app.scss ***!
+        \*******************************************************/
+
+/*!*******************************************************!*\
+    !*** multi ./public/js/app.js ./public/sass/app.scss ***!
+    \*******************************************************/
