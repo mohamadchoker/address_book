@@ -36,14 +36,14 @@
                 <li class="nav-item dropdown hidden-caret">
                     <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
                         <div class="avatar-sm">
-                            <img src="https://images.assetsdelivery.com/compings_v2/thesomeday123/thesomeday1231709/thesomeday123170900021.jpg" alt="..." class="avatar-img rounded-circle">
+                            <img src="{{url('avatar?name='.auth()->user()->name.'')}}" alt="..." class="avatar-img rounded-circle">
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-user animated fadeIn" >
                         <div class="dropdown-user-scroll scrollbar-outer">
                             <li>
                                 <div class="user-box">
-                                    <div class="avatar-lg"><img src="https://images.assetsdelivery.com/compings_v2/thesomeday123/thesomeday1231709/thesomeday123170900021.jpg" alt="image profile" class="avatar-img rounded"></div>
+                                    <div class="avatar-lg"><img src="{{url('avatar?name='.auth()->user()->name.'')}}" alt="image profile" class="avatar-img rounded"></div>
                                     <div class="u-text">
                                         <h4>{!! auth()->user()->name !!}</h4>
                                         <p class="text-muted">{!! auth()->user()->email !!}</p>
@@ -62,7 +62,7 @@
                                 </form>
                                 <div class="dropdown-divider"></div>
                                 <div class="dropdown-item-text disabled-linsk d-flex"><span><i class="fa fa-moon"></i> Dark mode</span>
-                                     <div class="theme-switch-wrapper ml-2">
+                                    <div class="theme-switch-wrapper ml-2">
                                         <label class="theme-switch" for="checkbox">
                                             <input type="checkbox" id="checkbox" />
                                             <div class="slider round"></div>

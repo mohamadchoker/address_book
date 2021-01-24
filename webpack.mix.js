@@ -22,7 +22,6 @@ mix.scripts([
     'public/js/vendor/jquery-validate.js',
     'public/js/vendor/jquery-scrollbar.js',
     'public/js/vendor/jquery-touch-punch.js',
-    'public/js/vendor/noitify.js',
     'public/js/vendor/sweetalert.js',
     'public/js/vendor/lazyload.js',
     'public/js/vendor/core.js'

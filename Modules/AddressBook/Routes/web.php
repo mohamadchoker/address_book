@@ -11,6 +11,8 @@
 |
 */
 
-Route::prefix('addressbook')->group(function() {
-    Route::get('/', 'AddressBookController@index');
-});
+use Illuminate\Support\Facades\Route;
+
+Route::resource('contacts','ContactsController');
+Route::resource('groups','GroupsController');
+Route::resource('tags','TagsController');

@@ -24,9 +24,14 @@ class Contact extends Model
         return $this->hasMany(Address::class);
     }
 
-    public function phoneNumbers()
+    public function phones()
     {
         return $this->hasMany(PhoneNumber::class);
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(ContactTag::class);
     }
 
 }
