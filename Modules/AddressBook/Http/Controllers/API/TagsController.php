@@ -2,78 +2,79 @@
 
 namespace Modules\AddressBook\Http\Controllers\API;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+use Modules\AddressBook\Entities\Tag;
+use Modules\AddressBook\Http\Requests\CreateTagRequest;
+use Modules\AddressBook\Http\Requests\UpdateTagRequest;
+use Modules\AddressBook\Repositories\TagsRepository;
+use Modules\AddressBook\Transformers\TagsResource;
 
 class TagsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return view('addressbook::index');
+        try {
+            $data = TagsRepository::getTags($request->all());
+            return (TagsResource::collection($data['tags']))->additional([
+                'recordsTotal' => $data['total_count'],
+                'recordsFiltered' => $data['this_count'],
+                'draw' => $request->draw,
+            ]);
+        }catch (\Exception $e){
+            return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+
+    public function store(CreateTagRequest $request)
     {
-        return view('addressbook::create');
+        try {
+            DB::beginTransaction();
+            $data = $request->all();
+            $data['user_id'] = auth()->id();
+            TagsRepository::createTag($data);
+            DB::commit();
+
+
+            return Response::json(['status'=>true,'title' =>  'Success' ,'message'=>trans('strings.crud.created', ['attribute' => trans('strings.tags.name')])],200);
+
+        }catch (\Exception $e){
+            DB::rollBack();
+            return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+
+    public function update(UpdateTagRequest $request, Tag $tag)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $data = $request->all();
+            TagsRepository::updateTag($tag,$data);
+            DB::commit();
+
+            return Response::json(['status'=>true,'title' =>  'Success' ,'message'=>trans('strings.crud.updated', ['attribute' => trans('strings.tags.name')])],200);
+
+        }catch (\Exception $e){
+            DB::rollBack();
+            return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
+        }
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+    public function destroy(Tag $tag)
     {
-        return view('addressbook::show');
-    }
+        try {
+            if(TagsRepository::checkTagsContacts($tag->id)){
+                return Response::json(['status'=>true,'title' =>  'Success' ,'message'=> trans('strings.tags.delete_exception')],403);
+            }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('addressbook::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+            TagsRepository::deleteTag($tag);
+            return Response::json(['status'=>true,'title' =>  'Success' ,'message'=>trans('strings.crud.deleted', ['attribute' => trans('strings.tags.name')])],200);
+        }catch (\Exception $e){
+            return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
+        }
     }
 }

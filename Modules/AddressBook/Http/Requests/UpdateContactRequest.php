@@ -2,12 +2,11 @@
 
 namespace Modules\AddressBook\Http\Requests;
 
-use App\Http\Requests\ApiRequest;
 use App\Rules\PhoneNumberExists;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateContactRequest extends ApiRequest
+class UpdateContactRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,9 +15,10 @@ class CreateContactRequest extends ApiRequest
      */
     public function rules()
     {
+
         return [
             'email' => ['required','string',
-                Rule::unique('contacts')->where('user_id',auth()->id())
+                Rule::unique('contacts')->where('user_id',auth()->id())->ignore($this->contact->id)
             ],
             'first_name' => ['required','string'],
             'last_name' => ['required','string'],
@@ -28,7 +28,7 @@ class CreateContactRequest extends ApiRequest
             'birth_date' => ['nullable','date'],
             'gender' => ['required'],
             'phones' => ['required','array'],
-            'phones.*.number' => ['required','distinct',new PhoneNumberExists(null)],
+            'phones.*.number' => ['required','distinct',new PhoneNumberExists($this->contact->id)],
             'addresses' => ['required','array']
 
         ];

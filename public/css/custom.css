@@ -416,3 +416,6 @@ table:not(.table-sm) thead th {
         min-height : 450px;
     }
 }
+.swal-title{
+    font-size: 1.2em!important;
+}

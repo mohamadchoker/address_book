@@ -8,15 +8,20 @@ use Illuminate\Support\Facades\DB;
 
 class PhoneNumberExists implements Rule
 {
+
+    protected $ignore ;
+
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct()
+
+    public function __construct($ignore)
     {
-        //
+        $this->ignore = $ignore;
     }
+
 
     /**
      * Determine if the validation rule passes.
@@ -28,12 +33,16 @@ class PhoneNumberExists implements Rule
     public function passes($attribute, $value)
     {
 
-        return DB::table('phone_numbers')
+        $check =  DB::table('phone_numbers')
             ->leftJoin('contacts',function (JoinClause $join) {
                 $join->on('contacts.user_id','=',DB::raw("'".auth()->id()."'"));
-            })
-            ->where('number',$value)
-            ->doesntExist();
+            });
+        if(!is_null($this->ignore)){
+            $check->where('contact_id','!=',$this->ignore);
+        }
+        $check = $check->where('number',$value)->doesntExist();
+
+        return $check;
     }
 
     /**

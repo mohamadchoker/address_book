@@ -21,31 +21,47 @@ class ContactsRepository
             'contacts.job_title',
             'contacts.is_favorite',
             'contacts.location')
-            ->selectRaw('GROUP_CONCAT(phone_numbers.number) as phones')
             ->selectRaw('CONCAT(contacts.first_name," ",contacts.last_name) as full_name')
-            ->leftJoin('phone_numbers', 'phone_numbers.contact_id', '=', 'contacts.id')
+            ->selectRaw('GROUP_CONCAT(distinct phone_numbers.number) as phones')
+            ->selectRaw('GROUP_CONCAT(distinct tags.name) as tags')
             ->leftJoin('contact_tags', 'contact_tags.contact_id', '=', 'contacts.id')
             ->leftJoin('tags', 'tags.id', '=', 'contact_tags.tag_id')
+            ->leftJoin('phone_numbers', 'phone_numbers.contact_id', '=', 'contacts.id')
+            ->leftJoin('addresses', 'addresses.contact_id', '=', 'contacts.id')
             ->groupBy('contacts.id');
 
-       // $query->where('phone_numbers.type','mobile');
 
         // used for datatable pagination
         $total_count = $query->get()->count();
 
         //filters
         if(isset($params['tags'])) {
-            $services  = explode(',',$params['tags']);
-            $query->whereIn('items.id',$services);
+            $tags  = explode(',',$params['tags']);
+            $query->whereIn('contact_tags.tag_id',$tags);
         }
         if(isset($params['group'])){
             $query->where('contacts.group_id',$params['group']);
+        }
+        if(isset($params['job'])){
+            $query->where('contacts.job_title',$params['job']);
+        }
+        if(isset($params['company'])){
+            $query->where('contacts.company',$params['company']);
+        }
+        if(isset($params['location'])){
+            $query->where('contacts.location',$params['location']);
+        }
+        if(isset($params['favorite'])){
+            $query->where('contacts.is_favorite',$params['favorite']);
+        }
+        if(isset($params['country'])){
+            $query->where('addresses.country',$params['country']);
         }
 
         //search input
         if (isset($params['search']) && $params['search']['value'] != '') {
             $search = $params['search']['value'];
-            $query->whereLike(['first_name','last_name','email','contacts.job_title','contacts.location','tags.name'], $search);
+            $query->whereLike(['first_name','last_name','email','contacts.job_title','contacts.location','tags.name','phone_numbers.number'], $search);
         }
 
         //ordering
@@ -195,5 +211,11 @@ class ContactsRepository
         PhoneNumber::where('contact_id',$contact->id)->delete();
         Address::where('contact_id',$contact->id)->delete();
         ContactTag::where('contact_id',$contact->id)->delete();
+    }
+
+    public static function markAsFavorite($contact , $value)
+    {
+        $contact->is_favorite = $value;
+        $contact->save();
     }
 }

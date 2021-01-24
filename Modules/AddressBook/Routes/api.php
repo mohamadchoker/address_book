@@ -16,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::resource('contacts','API\ContactsController');
 Route::resource('groups','API\GroupsController');
 Route::resource('tags','API\TagsController');
+
+Route::post('contacts/{contact}/action-favorite','API\ContactsController@actionFavorite');

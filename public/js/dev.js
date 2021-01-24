@@ -18,7 +18,9 @@ $.delete = function(url, data, callback, type){
         contentType: type
     });
 }
-
+$('.alert-success').fadeTo(2000, 1000).slideUp(1000, function () {
+    $(".alert-success").slideUp(1000);
+});
 
 
 function getUrlVars()
@@ -153,13 +155,66 @@ var ContactsIndex = function () {
     var contacts_table;
     var init = function () {
 
+        $('.btn-filter').on('click', function () {
+            $('.filter').toggle();
+        })
+
+        $('.company').select2({
+            placeholder: "Select a company",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+        $('.job').select2({
+            placeholder: "Select a job",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+        $('.group').select2({
+            placeholder: "Select a group",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+        $('.tags').select2({
+            placeholder: "Select tags",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+        $('.location').select2({
+            placeholder: "Select a location",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+
+        $('.country').select2({
+            placeholder: "Select a country",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+        $('.favorite').select2({
+            placeholder: "Favortie",
+            allowClear: true,
+            theme: "bootstrap",
+        });
+
+        $(".filter_value").each(function () {
+            $(this).val('').trigger('change');
+        });
+
+        $('.clear').on('click', function () {
+            $(".filter_value").each(function () {
+                $(this).val('').trigger('change');
+            });
+        });
+
         contacts_table = $('#contacts_table').DataTable({
 
             "serverSide": true,
             "ajax": API_ENDPOINT+'/contacts',
             rowId: "id",
-            "lengthMenu": [ 10, 25, 50, 100, 500, 999,'All'],
-
+            "lengthMenu": [ 10, 25, 50, 100, 500, 999],
+            language: {
+                searchPlaceholder: "Search records"
+            },
             columns: [
                 {data: null ,render:function (data) {
                         return '<div class="item-list">' +
@@ -195,7 +250,7 @@ var ContactsIndex = function () {
                             '<button type="button" class="btn btn-link  btn-secondary btn-group-lg" data-toggle="tooltip" data-original-title="Show" onclick="window.location.href= \'' + show_url + '\'  ">\n' +
                             '<i class="fa fa-user"></i>\n' +
                             '</button>' +
-                            '<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger delete_client"  data-original-title="Remove">\n' +
+                            '<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger delete_contact"  data-original-title="Remove">\n' +
                             '<i class="fa fa-trash"></i>\n' +
                             '</button>' +
                             '</div>';
@@ -214,9 +269,94 @@ var ContactsIndex = function () {
                     threshold: 0
 
                 });
+                $('.delete_contact').on('click', function () {
+                    var $this = this;
+                    var data = contacts_table.row($this.closest('tr')).data();
+
+
+                    Swal.fire({
+                        title: 'Are you sure you want to delete:',
+                        text: data.name,
+                        icon: 'warning',
+                        customClass: {
+                            confirmButton: 'btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        showLoaderOnConfirm: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        reverseButtons: true,
+                        showCancelButton: true,
+                        preConfirm: function (){
+                            var id = contacts_table.row($this.closest('tr')).id();
+                            return $.delete('' + API_ENDPOINT + '/contacts/' + id + '',function (){
+
+                            }).done(function (res){
+                                var ajax_url = RootPath + '/api/contacts';
+                                contacts_table.ajax.url(ajax_url).load();
+                                if(res.status){
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: res.message,
+                                        timer: 2000,
+                                        confirmButtonText: 'Ok',
+                                        timerProgressBar: true,
+                                    }).then(function (){
+                                        swal.close();
+                                    })
+
+                                }else{
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: res.message,
+                                        confirmButtonText: 'ok'
+                                    })
+                                }
+                            }).fail(function(res) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: res.messsge,
+                                    confirmButtonText: 'Ok'
+                                })
+                            })
+
+                        },
+
+                    })
+                });
+                $('.fa-star').on('click',function (){
+                    var $this = this;
+                    var id = contacts_table.row($this.closest('tr')).id();
+                    var checked = ($('#star'+id+'').is(':checked')) ? 0 : 1;
+                    api('post',API_ENDPOINT+'/contacts/'+id+'/action-favorite',{favorite:checked},function (){
+
+                    })
+                })
             }
         });
     }
+
+    $('.filter_submit').on('click', function () {
+        ajax_url = API_ENDPOINT+'/contacts?'
+        $(".filter_value").each(function () {
+            var id = $(this).attr('id');
+            var _this = $(this);
+            var value;
+            if(id == 'tags'){
+                value = $('#'+id+'').val()
+            }else{
+                value = $("#" + id + " option:selected").val();
+            }
+            if (typeof value === 'undefined' || value === '') {
+                value = _this.val();
+            }
+            if (value !== '' && value !== null && value.length !== 0) {
+                ajax_url = ajax_url + id + "=" + value + "&";
+            }
+        });
+        contacts_table.ajax.url(ajax_url).load();
+    });
+
 
     return {
         init : init
@@ -409,6 +549,215 @@ var ContactCreate  = function (type) {
     }
     return {
         init : init
+    }
+}
+
+var groupsIndex = function (){
+    var groups_table;
+    var init = function () {
+
+        $("#createGroupForm").validate({
+            validClass: "success",
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+            success: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            submitHandler: function (form) {
+                var formData = {};
+                $(form).find("input[name]").each(function (index, node) {
+                    formData[node.name] = node.value;
+                });
+                $(form).find("textarea[name]").each(function (index, node) {
+                    formData[node.name] = node.value;
+                });
+                method = 'post';
+
+                api(method,API_ENDPOINT+'/groups', formData, function () {
+                    var url = API_ENDPOINT+'/groups' ;
+                    groups_table.ajax.url(url).load();
+                    $('#createGroupModal').modal('hide');
+                });
+
+                return false;
+            }
+        });
+
+
+        $("#editGroupForm").validate({
+            validClass: "success",
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+            success: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            submitHandler: function (form) {
+                var formData = {};
+                $(form).find("input[name]").each(function (index, node) {
+                    formData[node.name] = node.value;
+                });
+                $(form).find("textarea[name]").each(function (index, node) {
+                    formData[node.name] = node.value;
+                });
+                group_id = $('#group_id').val();
+                method = 'put';
+                api(method, API_ENDPOINT+'/groups/'+group_id, formData, function () {
+                    $('#editGroupModal').modal('hide');
+                    var url = API_ENDPOINT+'/groups' ;
+                    groups_table.ajax.url(url).load();
+                });
+
+                return false;
+            }
+        });
+
+
+        $('#createGroupModal').on('hidden.bs.modal', function () {
+            $(this).find('form').trigger('reset');
+        });
+
+        groups_table = $('#groups_table').DataTable({
+
+            "serverSide": true,
+            "ajax": API_ENDPOINT+'/groups',
+            rowId: "id",
+            "order": [[0, "desc"]],
+
+            columns: [
+                {data: 'name',orderable: false,className:'text-job'},
+                {data: 'description',orderable: false},
+                {data: 'count',orderable: false},
+                {
+                    data: null, orderable: false, className: 'text-center', render: function (data) {
+                        return '<div class="form-button-action">' +
+                            '<button type="button" class="btn btn-link btn-primary btn-lg edit_item "  data-toggle="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#editGroupModal">\n' +
+                            '<i class="fa fa-edit"></i>\n' +
+                            '</button>' +
+                            '</div>';
+                    }
+                }
+            ],
+
+            "fnDrawCallback": function () {
+                $('button').tooltip();
+                data = groups_table.ajax.json();
+                $('.edit_item').on('click', function () {
+                    var index = groups_table.row(this.closest('tr')).index();
+                    var item = data.data[index];
+                    $('#group_id').val(item.id);
+                    $('#editName').val(item.name);
+                    $('#editDescription').val(item.description);
+                    $('#editGroupModal').modal('show');
+                });
+
+            }
+        });
+    };
+    return {
+        init:init
+    }
+}
+
+var tagsIndex = function (){
+    var tags_table;
+    var init = function () {
+
+        $("#createTagForm").validate({
+            validClass: "success",
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+            success: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            submitHandler: function (form) {
+                var formData = {};
+                $(form).find("input[name]").each(function (index, node) {
+                    formData[node.name] = node.value;
+                });
+
+                method = 'post';
+                api(method,API_ENDPOINT+'/tags', formData, function () {
+                    $('#createTagModal').modal('hide');
+                    var url = API_ENDPOINT+'/tags' ;
+                    tags_table.ajax.url(url).load();
+                });
+
+                return false;
+            }
+        });
+
+
+        $("#editTagForm").validate({
+            validClass: "success",
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+            success: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            submitHandler: function (form) {
+                var formData = {};
+                $(form).find("input[name]").each(function (index, node) {
+                    formData[node.name] = node.value;
+                });
+
+                tag_id = $('#tag_id').val();
+                method = 'put';
+                api(method, API_ENDPOINT+'/tags/'+tag_id, formData, function () {
+                    $('#editTagModal').modal('hide');
+                    var url = API_ENDPOINT+'/tags' ;
+                    tags_table.ajax.url(url).load();
+                });
+
+                return false;
+            }
+        });
+
+
+        $('#createTagModal').on('hidden.bs.modal', function () {
+            $(this).find('form').trigger('reset');
+        });
+
+        tags_table = $('#tags_table').DataTable({
+
+            "serverSide": true,
+            "ajax": API_ENDPOINT+'/tags',
+            rowId: "id",
+            "order": [[0, "desc"]],
+
+            columns: [
+                {data: 'name',orderable: false,className:'text-job'},
+                {data: 'count',orderable: false},
+                {
+                    data: null, orderable: false, className: 'text-center', render: function (data) {
+                        return '<div class="form-button-action">' +
+                            '<button type="button" class="btn btn-link btn-primary btn-lg edit_item "  data-toggle="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#editTagsModal">\n' +
+                            '<i class="fa fa-edit"></i>\n' +
+                            '</button>' +
+                            '</div>';
+                    }
+                }
+            ],
+
+            "fnDrawCallback": function () {
+                $('button').tooltip();
+                data = tags_table.ajax.json();
+                $('.edit_item').on('click', function () {
+                    var index = tags_table.row(this.closest('tr')).index();
+                    var item = data.data[index];
+                    $('#tag_id').val(item.id);
+                    $('#editName').val(item.name);
+                    $('#editTagModal').modal('show');
+                });
+
+            }
+        });
+    };
+    return {
+        init:init
     }
 }
 

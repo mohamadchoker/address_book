@@ -19,7 +19,13 @@ class ContactsController extends Controller
      */
     public function index()
     {
-        return view('addressbook::contacts.index');
+        $groups = Group::all()->pluck('name','id');
+        $tags = Tag::all()->pluck('name','id');
+        $countries = Country::all()->pluck('name','id');
+        $jobs = Contact::all()->whereNotNull('job_title')->pluck('job_title','job_title')->unique();
+        $companies = Contact::all()->whereNotNull('company')->pluck('company','company')->unique();
+        $locations = Contact::all()->whereNotNull('location')->pluck('location','location')->unique();
+        return view('addressbook::contacts.index',compact('groups','tags','jobs','companies','locations','countries'));
     }
 
     /**

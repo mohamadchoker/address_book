@@ -1,9 +1,4 @@
 <?php
-/**
- * User: Choker
- * Date: 01/24/2019
- * Time: 4:09 PM
- */
 
 namespace App\Helpers;
 

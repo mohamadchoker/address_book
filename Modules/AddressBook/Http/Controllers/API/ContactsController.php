@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Modules\AddressBook\Entities\Contact;
 use Modules\AddressBook\Http\Requests\CreateContactRequest;
+use Modules\AddressBook\Http\Requests\UpdateContactRequest;
 use Modules\AddressBook\Repositories\ContactsRepository;
 use Modules\AddressBook\Transformers\ContactsResource;
 
@@ -21,16 +22,19 @@ class ContactsController extends Controller
 
     /**
      * Display a listing of the resource.
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(Request $request)
     {
-        $data = ContactsRepository::getContacts($request->all());
-        return (ContactsResource::collection($data['contacts']))->additional([
-            'recordsTotal' => $data['total_count'],
-            'recordsFiltered' => $data['this_count'],
-            'draw' => $request->draw,
-        ]);
+        try {
+            $data = ContactsRepository::getContacts($request->all());
+            return (ContactsResource::collection($data['contacts']))->additional([
+                'recordsTotal' => $data['total_count'],
+                'recordsFiltered' => $data['this_count'],
+                'draw' => $request->draw,
+            ]);
+        }catch (\Exception $e){
+            return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
+        }
     }
 
 
@@ -63,7 +67,7 @@ class ContactsController extends Controller
      * @param  Contact  $contact
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Contact $contact)
+    public function update(UpdateContactRequest $request, Contact $contact)
     {
         try {
             DB::beginTransaction();
@@ -91,6 +95,20 @@ class ContactsController extends Controller
             ContactsRepository::deleteContact($contact);
             return Response::json(['status'=>true,'title' =>  'Success' ,'message'=>trans('strings.crud.deleted', ['attribute' => trans('strings.contacts.name')])],200);
         }catch (\Exception $e){
+            return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
+        }
+    }
+
+    public function actionFavorite(Contact $contact , Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            ContactsRepository::markAsFavorite($contact,$request['favorite']);
+            DB::commit();
+
+            return Response::json(['status'=>true,'title' =>  'Success'],200);
+        }catch (\Exception $e){
+            DB::rollBack();
             return Response::json(['status' => false,'message'=>trans('strings.errors.general'),'exception'=>$e->getMessage()],500);
         }
     }

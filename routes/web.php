@@ -20,3 +20,5 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('avatar','ImageController@getDefaultAvatar')->middleware(['web','auth']);
+Route::post('api/upload_image','ImageController@upload')->middleware(['web','auth']);
