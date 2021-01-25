@@ -11,7 +11,7 @@ AddressBook uses [Laravel 7](http://laravel.com), the best existing PHP framewor
 ## Installation
 
 * Install [Composer](https://getcomposer.org/download) and [Npm](https://nodejs.org/en/download)
-* Clone the repository: `git clone https://github.com/akaunting/akaunting.git`
+* Clone the repository: `git clone https://github.com/mohamadchoker/address_book.git`
 * Install dependencies: `composer install ; npm install ; npm run dev`
 * Create .env file: `cp .env.example`
 * Migration: `php artisan migrate`
