@@ -95,11 +95,11 @@ class ContactsRepository
         $contact->first_name = $data['first_name'];
         $contact->last_name = $data['last_name'];
         $contact->email = $data['email'];
-        $contact->photo = $data['avatar'];
+        $contact->photo = $data['photo'];
         $contact->location = $data['location'];
         $contact->company = $data['company'];
         $contact->job_title = $data['job_title'];
-        $contact->group_id = $data['group'];
+        $contact->group_id = $data['group_id'];
         $contact->gender = $data['gender'];
         $contact->birth_date = $data['birth_date'];
         $contact->facebook_link = $data['facebook_link'];
@@ -108,31 +108,33 @@ class ContactsRepository
         $contact->instagram_link = $data['instagram_link'];
         $contact->save();
 
-        foreach ($data['phones'] as $phone)
-        {
-            $phone_number = new PhoneNumber();
-            $phone_number->contact_id = $contact->id;
-            $phone_number->number = $phone['number'];
-            $phone_number->type = $phone['type'];
-            $phone_number->save();
+        if(isset($data['phones'])){
+            foreach ($data['phones'] as $phone)
+            {
+                $phone_number = new PhoneNumber();
+                $phone_number->contact_id = $contact->id;
+                $phone_number->number = $phone['number'];
+                $phone_number->type = $phone['type'];
+                $phone_number->save();
+            }
         }
 
-        foreach ($data['addresses'] as $address)
-        {
-            $contact_address = new Address();
-            $contact_address->contact_id = $contact->id;
-            $contact_address->title = $address['title'];
-            $contact_address->line1 = $address['title'];
-            $contact_address->line2 = $address['line2'];
-            $contact_address->state = $address['state'];
-            $contact_address->city = $address['city'];
-            $contact_address->street = $address['street'];
-            $contact_address->zip = $address['zip'];
-            $contact_address->country = $address['country'];
-            $contact_address->save();
+        if(isset($data['addresses'])) {
+            foreach ($data['addresses'] as $address) {
+                $contact_address = new Address();
+                $contact_address->contact_id = $contact->id;
+                $contact_address->title = $address['title'];
+                $contact_address->line1 = $address['title'];
+                $contact_address->line2 = $address['line2'];
+                $contact_address->state = $address['state'];
+                $contact_address->city = $address['city'];
+                $contact_address->street = $address['street'];
+                $contact_address->zip = $address['zip'];
+                $contact_address->country = $address['country'];
+                $contact_address->save();
 
+            }
         }
-
 
         if( isset($data['tags'])) {
             $tags  = $data['tags'];
@@ -144,6 +146,8 @@ class ContactsRepository
                 $client_tag->save();
             }
         }
+
+        return $contact;
     }
 
     public static function updateContact($contact,array $data)
@@ -151,11 +155,11 @@ class ContactsRepository
         $contact->first_name = $data['first_name'];
         $contact->last_name = $data['last_name'];
         $contact->email = $data['email'];
-        $contact->photo = $data['avatar'];
+        $contact->photo = $data['photo'];
         $contact->location = $data['location'];
         $contact->company = $data['company'];
         $contact->job_title = $data['job_title'];
-        $contact->group_id = $data['group'];
+        $contact->group_id = $data['group_id'];
         $contact->gender = $data['gender'];
         $contact->birth_date = $data['birth_date'];
         $contact->facebook_link = $data['facebook_link'];
