@@ -17,9 +17,9 @@ AddressBook uses [Laravel 7](http://laravel.com), the best existing PHP framewor
 * Migration: `php artisan migrate`
 * Required data seeding: `php artisan db:seed`
 * Create public disk symbolik link: `php artisan storage:link`
-* Composer dumo: `composer dump`
+* Composer dump: `composer dump`
 
 ## Testing
 * `php artisan test`
-* OR
+or
 * `vendor/bin/phpunit`
