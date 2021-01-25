@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('avatar','ImageController@getDefaultAvatar')->middleware(['web','auth']);
-Route::post('api/upload_image','ImageController@upload')->middleware(['web','auth']);
+Route::middleware(['web','auth'])->group(function () {
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::get('avatar','ImageController@getDefaultAvatar');
+    Route::post('api/upload_image','ImageController@upload');
+});
+

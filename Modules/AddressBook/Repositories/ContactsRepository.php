@@ -21,7 +21,7 @@ class ContactsRepository
             'contacts.job_title',
             'contacts.is_favorite',
             'contacts.location')
-            ->selectRaw('CONCAT(contacts.first_name," ",contacts.last_name) as full_name')
+            ->selectRaw('CONCAT(contacts.first_name," ",contacts.last_name) as name')
             ->selectRaw('GROUP_CONCAT(distinct phone_numbers.number) as phones')
             ->selectRaw('GROUP_CONCAT(distinct tags.name) as tags')
             ->leftJoin('contact_tags', 'contact_tags.contact_id', '=', 'contacts.id')

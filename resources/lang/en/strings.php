@@ -7,13 +7,17 @@ return [
         'list' => 'List contacts',
         'create' => 'Create new contact',
         'edit' => 'Edit contact',
+        'view' => 'View',
         'table' => [
             'full_name' => 'Full name',
             'email' => 'Email',
             'phone_number' => 'Phone number',
             'location' => 'Location',
             'actions' => 'Actions'
-        ]
+        ],
+        'basic_info' => 'Basic Info',
+        'phones' => 'Phone numbers',
+        'addresses' => 'Addresses'
     ],
     'groups' => [
         'name' => 'Groups',
@@ -69,6 +73,7 @@ return [
     'filter_contacts' => 'Filter contacts',
     'favorite' => 'Favorite',
     'name' => 'Name',
-    'description' => 'Description'
+    'description' => 'Description',
+    'group' => 'Group'
 
 ];

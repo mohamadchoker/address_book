@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group form-group-default">
-                                <label>{!! 'strings.name' !!}</label>
+                                <label>{!! trans('strings.name') !!}</label>
                                 <input id="addName" type="text" name="name"
                                        class="form-control"
                                        autocomplete="off" required>
@@ -23,7 +23,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group form-group-default">
-                                <label>{!! 'strings.description' !!}</label>
+                                <label>{!! trans('strings.description') !!}</label>
                                 <textarea class="form-control" name="description"></textarea>
                             </div>
                         </div>

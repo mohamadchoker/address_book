@@ -17,9 +17,9 @@ class ContactsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->full_name,
+            'name' => $this->name,
             'email' => $this->email,
-            'photo' => (!is_null($this->photo)) ? Storage::url($this->photo.'_60x60') : url('avatar?name='.$this->full_name.''),
+            'photo' => (!is_null($this->photo)) ? Storage::url($this->photo.'_60x60') : url('avatar?name='.$this->name.''),
             'location' => $this->location,
             'job' => $this->job_title,
             'is_favorite' => $this->is_favorite,

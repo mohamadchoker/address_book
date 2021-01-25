@@ -29,7 +29,11 @@ class UpdateContactRequest extends FormRequest
             'gender' => ['required'],
             'phones' => ['required','array'],
             'phones.*.number' => ['required','distinct',new PhoneNumberExists($this->contact->id)],
-            'addresses' => ['required','array']
+            'addresses' => ['required','array'],
+            'facebook_link' => ['nullable','url', Rule::unique('contacts')->where('user_id',auth()->id())->ignore($this->contact->id)],
+            'linkedin_link' => ['nullable','url', Rule::unique('contacts')->where('user_id',auth()->id())->ignore($this->contact->id)],
+            'twitter_link' => ['nullable','url', Rule::unique('contacts')->where('user_id',auth()->id())->ignore($this->contact->id)],
+            'instagram_link' => ['nullable','url', Rule::unique('contacts')->where('user_id',auth()->id())->ignore($this->contact->id)]
 
         ];
     }

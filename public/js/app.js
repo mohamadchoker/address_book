@@ -18,6 +18,12 @@ $.delete = function(url, data, callback, type){
         contentType: type
     });
 }
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
 $('.alert-success').fadeTo(2000, 1000).slideUp(1000, function () {
     $(".alert-success").slideUp(1000);
 });
@@ -76,11 +82,6 @@ $("#register").validate({
 
 var api = function (method, url, data, callback) {
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
 
     $.ajax({
         url: url,
@@ -631,10 +632,17 @@ var groupsIndex = function (){
                 {data: 'count',orderable: false},
                 {
                     data: null, orderable: false, className: 'text-center', render: function (data) {
+                        var btn_delete ='<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger delete_group"  data-original-title="Remove">\n' +
+                            '<i class="fa fa-trash"></i>\n' +
+                            '</button>' ;
+                        if(data.can_delete !== 1){
+                            btn_delete = '';
+                        }
                         return '<div class="form-button-action">' +
                             '<button type="button" class="btn btn-link btn-primary btn-lg edit_item "  data-toggle="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#editGroupModal">\n' +
                             '<i class="fa fa-edit"></i>\n' +
                             '</button>' +
+                            ''+btn_delete+''+
                             '</div>';
                     }
                 }
@@ -650,6 +658,62 @@ var groupsIndex = function (){
                     $('#editName').val(item.name);
                     $('#editDescription').val(item.description);
                     $('#editGroupModal').modal('show');
+                });
+
+                $('.delete_group').on('click', function () {
+                    var $this = this;
+                    var data = groups_table.row($this.closest('tr')).data();
+
+
+                    Swal.fire({
+                        title: 'Are you sure you want to delete:',
+                        text: data.name,
+                        icon: 'warning',
+                        customClass: {
+                            confirmButton: 'btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        showLoaderOnConfirm: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        reverseButtons: true,
+                        showCancelButton: true,
+                        preConfirm: function (){
+                            var id = groups_table.row($this.closest('tr')).id();
+                            return $.delete('' + API_ENDPOINT + '/groups/' + id + '',function (){
+
+                            }).done(function (res){
+                                var ajax_url = RootPath + '/api/groups';
+                                groups_table.ajax.url(ajax_url).load();
+                                if(res.status){
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: res.message,
+                                        timer: 2000,
+                                        confirmButtonText: 'Ok',
+                                        timerProgressBar: true,
+                                    }).then(function (){
+                                        swal.close();
+                                    })
+
+                                }else{
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: res.message,
+                                        confirmButtonText: 'ok'
+                                    })
+                                }
+                            }).fail(function(res) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: res.messsge,
+                                    confirmButtonText: 'Ok'
+                                })
+                            })
+
+                        },
+
+                    })
                 });
 
             }
@@ -733,10 +797,17 @@ var tagsIndex = function (){
                 {data: 'count',orderable: false},
                 {
                     data: null, orderable: false, className: 'text-center', render: function (data) {
+                        var btn_delete ='<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger delete_tag"  data-original-title="Remove">\n' +
+                            '<i class="fa fa-trash"></i>\n' +
+                            '</button>' ;
+                        if(data.can_delete !== 1){
+                            btn_delete = '';
+                        }
                         return '<div class="form-button-action">' +
                             '<button type="button" class="btn btn-link btn-primary btn-lg edit_item "  data-toggle="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#editTagsModal">\n' +
                             '<i class="fa fa-edit"></i>\n' +
                             '</button>' +
+                            ''+btn_delete+''+
                             '</div>';
                     }
                 }
@@ -752,6 +823,62 @@ var tagsIndex = function (){
                     $('#editName').val(item.name);
                     $('#editTagModal').modal('show');
                 });
+                $('.delete_tag').on('click', function () {
+                    var $this = this;
+                    var data = tags_table.row($this.closest('tr')).data();
+
+
+                    Swal.fire({
+                        title: 'Are you sure you want to delete:',
+                        text: data.name,
+                        icon: 'warning',
+                        customClass: {
+                            confirmButton: 'btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        showLoaderOnConfirm: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        reverseButtons: true,
+                        showCancelButton: true,
+                        preConfirm: function (){
+                            var id = tags_table.row($this.closest('tr')).id();
+                            return $.delete('' + API_ENDPOINT + '/tags/' + id + '',function (){
+
+                            }).done(function (res){
+                                var ajax_url = RootPath + '/api/tags';
+                                tags_table.ajax.url(ajax_url).load();
+                                if(res.status){
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: res.message,
+                                        timer: 2000,
+                                        confirmButtonText: 'Ok',
+                                        timerProgressBar: true,
+                                    }).then(function (){
+                                        swal.close();
+                                    })
+
+                                }else{
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: res.message,
+                                        confirmButtonText: 'ok'
+                                    })
+                                }
+                            }).fail(function(res) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: res.messsge,
+                                    confirmButtonText: 'Ok'
+                                })
+                            })
+
+                        },
+
+                    })
+                });
+
 
             }
         });

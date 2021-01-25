@@ -17,7 +17,8 @@ class TagsResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'count' => $this->contacts_count
+            'count' => $this->contacts_count,
+            'can_delete' => ($this->contacts_count > 0) ? 0 : 1
         ];
     }
 }
