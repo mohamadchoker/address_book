@@ -2,11 +2,12 @@
 
 namespace Modules\AddressBook\Http\Requests;
 
+use App\Http\Requests\ApiRequest;
 use App\Rules\PhoneNumberExists;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateContactRequest extends FormRequest
+class UpdateContactRequest extends ApiRequest
 {
     /**
      * Get the validation rules that apply to the request.

@@ -61,14 +61,6 @@
                                     @csrf
                                 </form>
                                 <div class="dropdown-divider"></div>
-                                <div class="dropdown-item-text disabled-linsk d-flex"><span><i class="fa fa-moon"></i> Dark mode</span>
-                                    <div class="theme-switch-wrapper ml-2">
-                                        <label class="theme-switch" for="checkbox">
-                                            <input type="checkbox" id="checkbox" />
-                                            <div class="slider round"></div>
-                                        </label>
-                                    </div>
-                                </div>
                             </li>
                         </div>
                     </ul>
